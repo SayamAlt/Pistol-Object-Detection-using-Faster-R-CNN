@@ -8,6 +8,8 @@ from PIL import Image, ImageDraw, ImageFont
 from torchvision.models.detection.faster_rcnn import fasterrcnn_resnet50_fpn
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
+st.set_page_config(layout="wide", page_title="🔫 Pistol Object Detection App")
+
 try:
     font = ImageFont.truetype("arial.ttf", size=22)
 except:
@@ -33,11 +35,10 @@ def load_detection_model(classes):
 
 model = load_detection_model(class_names)
 
-st.set_page_config(layout="wide")
 st.title("🔫 Pistol Object Detection App")
-st.write("Upload an image, and the model will detect and highlight pistols in it.")
+st.write("📤 Upload an image, and the model will detect and highlight pistols in it.")
 
-uploaded_file = st.file_uploader("📤 Upload an image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("", type=["jpg", "jpeg", "png"])
 submit_button = st.button("🚀 Detect Pistols")
 clear_button = st.button("🗑️ Clear")
 
@@ -85,13 +86,17 @@ if submit_button:
                     text_width = bbox[2] - bbox[0]
                     text_height = bbox[3] - bbox[1]
 
+                    # Adjust Y position to avoid overflow
+                    text_x = box[0]
+                    text_y = max(0, box[1] - text_height - 8)  # ensures label stays inside image
+        
                     # Draw background box
                     draw.rectangle(
-                        [text_x, text_y - 5, text_x + text_width + 4, text_y + text_height],
+                        [text_x, text_y, text_x + text_width + 4, text_y + text_height + 2],
                         fill=text_bg_color
                     )
 
-                    draw.text((text_x + 2, text_y - 2), text, fill=text_color, font=font)
+                    draw.text((text_x + 2, text_y + 1), text, fill=text_color, font=font)
 
         with col2:
             st.image(detected_image, caption="🎯 Detected Pistols", use_container_width=True)
