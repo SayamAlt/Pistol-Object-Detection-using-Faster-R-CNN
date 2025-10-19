@@ -1,0 +1,4 @@
+pistol_object_detector.pth
+.DS_Store
+__pycache__
+.env
